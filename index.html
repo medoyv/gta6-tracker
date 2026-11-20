@@ -34,7 +34,8 @@ header{padding:12px 0 8px}
 .chip.on{background:var(--grad);color:#1a0b14;border-color:transparent;font-weight:700}
 .chip small{opacity:.7;margin-left:4px}
 .secbar{display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px}
-.secbar h2{font-family:Unbounded;font-size:22px;margin:0}
+.secbar h2{font-family:Unbounded;font-size:18px;margin:0;line-height:1.2}
+.secbar{gap:10px}
 .bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-bottom:14px}
 .bar i{display:block;height:100%;background:var(--grad);transition:width .4s}
 .tools{display:flex;gap:8px;margin-bottom:12px}
@@ -136,23 +137,35 @@ nav svg{width:24px;height:24px}
 <script>
 const KEY='gta6-tracker-v1';
 const uid=()=>Math.random().toString(36).slice(2,10);
+const STORY=[{"short": "Гл. 1", "name": "Just Like Paradise", "m": ["Prologue", "Gone Fishing", "Gear Up", "Just a Scratch", "Lab Fees", "Unwanted Attention", "Pipework", "Hey Arnold!", "Island Dreams", "Feng Shui", "Coming Home", "Buck Me", "Clean Up After Donnie", "Down to Earth", "Clear Skies", "Day Release", "Swamped", "Don Gone", "Recalibration", "Tourist Trap", "Home Sweet Home", "Discharge Time"]}, {"short": "Гл. 2", "name": "Paradise Lost", "m": ["What's in the Bag?", "Ambulance Chaser", "Just Moved In", "Girls' Trip", "Moses", "Daily Driver", "Slam Dunk", "Breakfast Run", "Coffee Break", "Afternoon Delight", "Thrillbillies*", "Twist Wrist, Smash, Grab*", "Checking Out"]}, {"short": "Гл. 3", "name": "Tits, Ass, Drug Money", "m": ["Welcome to Vice City", "Dealer's Choice", "Meet the Heders", "Dubious Provenance", "Mami Knows Best", "South Leonida Real Estate", "Tyrone", "Here, Kitty Kitty", "Kitty Litter Labs*", "Car Service", "Top Billing", "Boobie Time", "First Impressions", "Crosstown Traffic", "Credit Check", "Steal the Zorrusso for Randy", "Sinfrontera National Bank", "Security Expert", "Ride or Die", "Company Property", "The Missing Link", "Safe Word", "Cooties", "Bricked Up", "Hidden Charges", "The Cartel Heist"]}, {"short": "Гл. 4", "name": "Vice City, Baby", "m": ["Ocean Beach", "Another Life", "Company Cars", "Lawyer Up", "Party Hard", "Heavy Lifting", "Photo/Shoot", "Making Gainz", "Watch It", "Cash Injections", "Amateur Hour", "Dirty Work", "Too Much Baggage", "Adventures in Babysitting", "Fresh Evidence", "Power Play", "Child's Play", "Headliners", "Close Surveillance", "Delivery Method", "Team Building", "Fully Catered", "VCIA Takedown", "Sunset", "Starting from Zero"]}, {"short": "Гл. 5", "name": "Top of the World, Ma", "m": ["Bird in the Hand", "Taking Liberties", "VC Baby", "Doggie Bag", "Operation Savage Glory", "Protective Custody", "The End of the Road"]}];
 function seed(){
-  const cats=[['story','Сюжет'],['side','Побочные'],['collect','Коллекции'],['activity','Активности'],['biz','Бизнес'],['ach','Трофеи']];
+  const cats=[...STORY.map((c,i)=>['story'+(i+1),c.short]),['side','Побочные'],['collect','Коллекции'],['activity','Активности'],['biz','Бизнес'],['ach','Трофеи']];
   const items=[];
   const add=(c,t,n='')=>items.push({id:uid(),cat:c,title:t,note:n,done:false,at:0});
-  for(let i=1;i<=10;i++)add('story','Глава '+i,'Переименуйте под реальные миссии');
-  add('story','Финал');
+  storyItems().forEach(i=>items.push(i));
   ['Задания незнакомцев','Случайные события','Охота за наградой','Ограбления'].forEach(t=>add('side',t));
   ['Коллекционные предметы — 25%','Коллекционные предметы — 50%','Коллекционные предметы — 100%','Все граффити/тайники','Все фото-точки'].forEach(t=>add('collect',t));
   ['Уличные гонки','Рыбалка','Охота в болотах','Стрельбище','Тюнинг авто'].forEach(t=>add('activity',t));
   ['Купить первое жильё','Купить первый бизнес','Заработать $1 000 000','Заработать $10 000 000'].forEach(t=>add('biz',t));
   ['Пройти сюжет','100% прохождение','Все трофеи (Платина)'].forEach(t=>add('ach',t));
-  return {cats:cats.map(([id,name])=>({id,name})),items};
+  return {v:2,cats:cats.map(([id,name])=>({id,name})),items};
 }
-let S; try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){} if(!S||!S.items)S=seed();
+function storyItems(){const out=[];STORY.forEach((c,ci)=>c.m.forEach((m,mi)=>{const opt=m.endsWith('*');out.push({id:uid(),cat:'story'+(ci+1),title:(mi+1)+'. '+m.replace('*',''),note:opt?'Необязательная':'',done:false,at:0})}));return out}
+function migrate(S){
+  if(S.v>=2)return S;
+  const ci=S.cats.findIndex(c=>c.id==='story');
+  const custom=S.items.filter(i=>i.cat==='story'&&i.note!=='Переименуйте под реальные миссии');
+  S.items=S.items.filter(i=>i.cat!=='story');
+  custom.forEach(i=>i.cat='story5');
+  S.items=storyItems().concat(S.items,custom);
+  const sc=STORY.map((c,i)=>({id:'story'+(i+1),name:c.short}));
+  if(ci>=0)S.cats.splice(ci,1,...sc);else S.cats.unshift(...sc);
+  S.v=2;return S;
+}
+let S; try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){} if(!S||!S.items)S=seed();else{S=migrate(S);save()}
 let cur=S.cats[0].id, filter='all', editId=null;
 const $=id=>document.getElementById(id);
-const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
+function save(){localStorage.setItem(KEY,JSON.stringify(S))}
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pc=(a)=>a.length?Math.round(a.filter(i=>i.done).length/a.length*100):0;
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._);t._=setTimeout(()=>t.classList.remove('show'),1600)}
@@ -161,10 +174,10 @@ function render(){
   const all=S.items, done=all.filter(i=>i.done);
   const p=pc(all); $('pct').textContent=p+'%'; $('ringc').style.strokeDashoffset=251.3*(1-p/100);
   $('sDone').textContent=done.length;$('sAll').textContent=all.length;
-  $('sStory').textContent=pc(all.filter(i=>i.cat==='story'))+'%';
+  $('sStory').textContent=pc(all.filter(i=>i.cat.startsWith('story')))+'%';
   const last=done.sort((a,b)=>b.at-a.at)[0]; $('sLast').textContent=last?last.title:'—';
   $('cats').innerHTML=S.cats.map(c=>{const a=all.filter(i=>i.cat===c.id);return `<button class="chip ${c.id===cur?'on':''}" data-c="${c.id}">${esc(c.name)}<small>${a.filter(i=>i.done).length}/${a.length}</small></button>`}).join('');
-  const cat=S.cats.find(c=>c.id===cur); $('catTitle').textContent=cat?cat.name:'';
+  const cat=S.cats.find(c=>c.id===cur); const st=cur.startsWith('story')?STORY[+cur.slice(5)-1]:null; $('catTitle').textContent=st?st.name:(cat?cat.name:'');
   let a=all.filter(i=>i.cat===cur); $('catBar').style.width=pc(a)+'%';
   const q=$('q').value.trim().toLowerCase();
   if(q)a=a.filter(i=>(i.title+' '+i.note).toLowerCase().includes(q));
@@ -192,7 +205,7 @@ $('addCat').onclick=()=>{const n=$('newCat').value.trim();if(!n)return;const id=
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));['track','stats','set'].forEach(v=>$('v-'+v).classList.toggle('hidden',v!==b.dataset.v));$('fab').classList.toggle('hidden',b.dataset.v!=='track');scrollTo(0,0)});
 $('exp').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));a.download='gta6-progress.json';a.click()};
 $('impBtn').onclick=()=>$('imp').click();
-$('imp').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{const d=JSON.parse(t);if(!d.items)throw 0;S=d;save();render();toast('Импортировано')}catch(_){toast('Неверный файл')}})};
+$('imp').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{const d=JSON.parse(t);if(!d.items)throw 0;S=migrate(d);save();render();toast('Импортировано')}catch(_){toast('Неверный файл')}})};
 let armed={};function twice(k,fn,msg){if(armed[k]){fn();armed[k]=0}else{armed[k]=1;toast(msg);setTimeout(()=>armed[k]=0,2500)}}
 $('uncheck').onclick=()=>twice('u',()=>{S.items.forEach(i=>{i.done=false;i.at=0});save();render();toast('Отметки сняты')},'Нажмите ещё раз для подтверждения');
 $('reset').onclick=()=>twice('r',()=>{S=seed();save();render();toast('Сброшено')},'Нажмите ещё раз для подтверждения');
