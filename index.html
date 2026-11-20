@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GTA VI">
+<meta name="theme-color" content="#0e0a1a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<title>GTA VI — Трекер прохождения</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Unbounded:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e0a1a;--card:#1a1330;--card2:#231a40;--line:#2f2452;--text:#f4eefc;--mute:#a497c4;--pink:#ff3d8b;--orange:#ffb35c;--teal:#2ee6c9;--grad:linear-gradient(120deg,#ff3d8b,#ff8a5c 55%,#ffd27a)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Manrope,system-ui,-apple-system,sans-serif}
+body{padding:env(safe-area-inset-top) 0 calc(84px + env(safe-area-inset-bottom));min-height:100vh;
+background:radial-gradient(120% 50% at 50% -10%,rgba(255,61,139,.28),transparent 60%),var(--bg)}
+.wrap{max-width:560px;margin:0 auto;padding:16px}
+header{padding:12px 0 8px}
+.logo{font-family:Unbounded,sans-serif;font-weight:700;font-size:30px;letter-spacing:-.5px;line-height:1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mute);font-size:14px;margin-top:4px}
+.hero{display:flex;gap:16px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:14px 0}
+.ring{width:96px;height:96px;flex:none;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-family:Unbounded;font-size:24px}
+.stats{flex:1;display:grid;gap:6px;font-size:14px;color:var(--mute)}
+.stats strong{color:var(--text)}
+.cats{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);color:var(--text);padding:9px 14px;border-radius:999px;font:500 14px Manrope;white-space:nowrap}
+.chip.on{background:var(--grad);color:#1a0b14;border-color:transparent;font-weight:700}
+.chip small{opacity:.7;margin-left:4px}
+.secbar{display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px}
+.secbar h2{font-family:Unbounded;font-size:22px;margin:0}
+.bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-bottom:14px}
+.bar i{display:block;height:100%;background:var(--grad);transition:width .4s}
+.tools{display:flex;gap:8px;margin-bottom:12px}
+.tools input{flex:1}
+input,select,textarea{background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:11px 12px;font:16px Manrope;width:100%}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--pink);border-color:transparent}
+.list{display:grid;gap:8px}
+.item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 12px 12px 14px;transition:opacity .2s}
+.item.done{opacity:.55}
+.item.done .t{text-decoration:line-through}
+.chk{width:28px;height:28px;flex:none;border-radius:9px;border:2px solid var(--mute);background:none;display:grid;place-items:center;padding:0}
+.item.done .chk{background:var(--teal);border-color:var(--teal)}
+.chk svg{opacity:0}.item.done .chk svg{opacity:1}
+.body{flex:1;min-width:0}
+.t{font-weight:500;font-size:16px;word-break:break-word}
+.n{color:var(--mute);font-size:13px;margin-top:2px;word-break:break-word}
+.more{background:none;border:0;color:var(--mute);font-size:22px;padding:4px 6px}
+.empty{text-align:center;color:var(--mute);padding:30px 10px;border:1px dashed var(--line);border-radius:16px}
+.btn{border:0;border-radius:14px;padding:13px 16px;font:700 16px Manrope;background:var(--grad);color:#1a0b14}
+.btn.ghost{background:var(--card2);color:var(--text);border:1px solid var(--line)}
+.btn.danger{background:#3a1424;color:#ff7aa8}
+.fab{position:fixed;right:18px;bottom:calc(88px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;border:0;background:var(--grad);color:#1a0b14;font-size:32px;box-shadow:0 10px 30px rgba(255,61,139,.45)}
+nav{position:fixed;left:0;right:0;bottom:0;background:rgba(14,10,26,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom))}
+nav button{background:none;border:0;color:var(--mute);font:500 12px Manrope;display:grid;justify-items:center;gap:3px;padding:4px 18px}
+nav button.on{color:var(--pink)}
+nav svg{width:24px;height:24px}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:20}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-radius:24px 24px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom));z-index:21;transform:translateY(105%);transition:transform .28s;max-width:560px;margin:0 auto;border-top:1px solid var(--line)}
+.sheet.open{transform:none}.sheet-bg.open{display:block}
+.sheet h3{font-family:Unbounded;margin:0 0 12px;font-size:20px}
+.sheet label{display:block;font-size:13px;color:var(--mute);margin:10px 0 6px}
+.row{display:flex;gap:8px;margin-top:16px}.row .btn{flex:1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px}
+.card h3{margin:0 0 6px;font-family:Unbounded}
+.card p{color:var(--mute);font-size:14px;margin:0 0 12px}
+.catrow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);font-size:15px}
+.catrow:first-of-type{border-top:0}
+.mini{width:90px;height:5px;background:var(--line);border-radius:5px;overflow:hidden;display:inline-block;margin-left:10px;vertical-align:middle}
+.mini i{display:block;height:100%;background:var(--grad)}
+.toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translate(-50%,-300%);background:var(--card2);border:1px solid var(--line);padding:10px 16px;border-radius:12px;z-index:30;transition:transform .3s;font-size:14px}
+.toast.show{transform:translate(-50%,0)}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><div class="logo">GTA VI</div><div class="sub">Трекер прохождения · Леонида</div></header>
+
+  <section id="v-track">
+    <div class="hero">
+      <div class="ring"><svg width="96" height="96"><circle cx="48" cy="48" r="40" stroke="#2f2452" stroke-width="10" fill="none"/><circle id="ringc" cx="48" cy="48" r="40" stroke="url(#g)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="251.3" style="transition:stroke-dashoffset .5s"/><defs><linearGradient id="g"><stop offset="0" stop-color="#ff3d8b"/><stop offset="1" stop-color="#ffd27a"/></linearGradient></defs></svg><b id="pct">0%</b></div>
+      <div class="stats">
+        <div>Выполнено: <strong id="sDone">0</strong> из <strong id="sAll">0</strong></div>
+        <div>Сюжет: <strong id="sStory">0%</strong></div>
+        <div>Последнее: <strong id="sLast">—</strong></div>
+      </div>
+    </div>
+    <div class="cats" id="cats"></div>
+    <div class="secbar"><h2 id="catTitle"></h2><button class="chip" id="filterBtn">Все</button></div>
+    <div class="bar"><i id="catBar" style="width:0"></i></div>
+    <div class="tools"><input id="q" type="search" placeholder="Поиск…" autocomplete="off"></div>
+    <div class="list" id="list"></div>
+  </section>
+
+  <section id="v-stats" class="hidden">
+    <div class="card"><h3>Прогресс по разделам</h3><div id="catStats"></div></div>
+    <div class="card"><h3>Разделы</h3><p>Добавьте свой раздел, например «Ограбления» или «Пасхалки».</p>
+      <div class="tools"><input id="newCat" placeholder="Название раздела"><button class="btn" id="addCat">+</button></div></div>
+  </section>
+
+  <section id="v-set" class="hidden">
+    <div class="card"><h3>Резервная копия</h3><p>Данные хранятся только на этом устройстве. Сохраните копию, чтобы не потерять прогресс.</p>
+      <div class="row"><button class="btn ghost" id="exp">Экспорт</button><button class="btn ghost" id="impBtn">Импорт</button></div>
+      <input type="file" id="imp" accept="application/json" class="hidden"></div>
+    <div class="card"><h3>На главный экран</h3><p>В Safari нажмите «Поделиться» → «На экран „Домой“» — трекер откроется как приложение без адресной строки.</p></div>
+    <div class="card"><h3>Сброс</h3><p>Снять все отметки или вернуть стартовый список.</p>
+      <div class="row"><button class="btn ghost" id="uncheck">Снять отметки</button><button class="btn danger" id="reset">Сбросить всё</button></div></div>
+  </section>
+</div>
+
+<button class="fab" id="fab" aria-label="Добавить">+</button>
+
+<nav>
+  <button class="on" data-v="track"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>Задания</button>
+  <button data-v="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Статистика</button>
+  <button data-v="set"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Настройки</button>
+</nav>
+
+<div class="sheet-bg" id="bg"></div>
+<div class="sheet" id="sheet">
+  <h3 id="shTitle">Новое задание</h3>
+  <label>Название</label><input id="fTitle" placeholder="Например: Миссия 12">
+  <label>Раздел</label><select id="fCat"></select>
+  <label>Заметка</label><textarea id="fNote" rows="2" placeholder="Где найти, награда, советы…"></textarea>
+  <div class="row"><button class="btn danger hidden" id="fDel">Удалить</button><button class="btn ghost" id="fCancel">Отмена</button><button class="btn" id="fSave">Сохранить</button></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='gta6-tracker-v1';
+const uid=()=>Math.random().toString(36).slice(2,10);
+function seed(){
+  const cats=[['story','Сюжет'],['side','Побочные'],['collect','Коллекции'],['activity','Активности'],['biz','Бизнес'],['ach','Трофеи']];
+  const items=[];
+  const add=(c,t,n='')=>items.push({id:uid(),cat:c,title:t,note:n,done:false,at:0});
+  for(let i=1;i<=10;i++)add('story','Глава '+i,'Переименуйте под реальные миссии');
+  add('story','Финал');
+  ['Задания незнакомцев','Случайные события','Охота за наградой','Ограбления'].forEach(t=>add('side',t));
+  ['Коллекционные предметы — 25%','Коллекционные предметы — 50%','Коллекционные предметы — 100%','Все граффити/тайники','Все фото-точки'].forEach(t=>add('collect',t));
+  ['Уличные гонки','Рыбалка','Охота в болотах','Стрельбище','Тюнинг авто'].forEach(t=>add('activity',t));
+  ['Купить первое жильё','Купить первый бизнес','Заработать $1 000 000','Заработать $10 000 000'].forEach(t=>add('biz',t));
+  ['Пройти сюжет','100% прохождение','Все трофеи (Платина)'].forEach(t=>add('ach',t));
+  return {cats:cats.map(([id,name])=>({id,name})),items};
+}
+let S; try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){} if(!S||!S.items)S=seed();
+let cur=S.cats[0].id, filter='all', editId=null;
+const $=id=>document.getElementById(id);
+const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pc=(a)=>a.length?Math.round(a.filter(i=>i.done).length/a.length*100):0;
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._);t._=setTimeout(()=>t.classList.remove('show'),1600)}
+function render(){
+  if(!S.cats.find(c=>c.id===cur))cur=S.cats[0]?.id;
+  const all=S.items, done=all.filter(i=>i.done);
+  const p=pc(all); $('pct').textContent=p+'%'; $('ringc').style.strokeDashoffset=251.3*(1-p/100);
+  $('sDone').textContent=done.length;$('sAll').textContent=all.length;
+  $('sStory').textContent=pc(all.filter(i=>i.cat==='story'))+'%';
+  const last=done.sort((a,b)=>b.at-a.at)[0]; $('sLast').textContent=last?last.title:'—';
+  $('cats').innerHTML=S.cats.map(c=>{const a=all.filter(i=>i.cat===c.id);return `<button class="chip ${c.id===cur?'on':''}" data-c="${c.id}">${esc(c.name)}<small>${a.filter(i=>i.done).length}/${a.length}</small></button>`}).join('');
+  const cat=S.cats.find(c=>c.id===cur); $('catTitle').textContent=cat?cat.name:'';
+  let a=all.filter(i=>i.cat===cur); $('catBar').style.width=pc(a)+'%';
+  const q=$('q').value.trim().toLowerCase();
+  if(q)a=a.filter(i=>(i.title+' '+i.note).toLowerCase().includes(q));
+  if(filter==='todo')a=a.filter(i=>!i.done); if(filter==='done')a=a.filter(i=>i.done);
+  $('filterBtn').textContent={all:'Все',todo:'Не пройдено',done:'Пройдено'}[filter];
+  $('list').innerHTML=a.length?a.map(i=>`<div class="item ${i.done?'done':''}" data-id="${i.id}"><button class="chk" aria-label="Отметить"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0e0a1a" stroke-width="3.5"><path d="M5 12l5 5L20 7"/></svg></button><div class="body"><div class="t">${esc(i.title)}</div>${i.note?`<div class="n">${esc(i.note)}</div>`:''}</div><button class="more" aria-label="Изменить">⋯</button></div>`).join(''):`<div class="empty">Пусто. Нажмите «+», чтобы добавить задание.</div>`;
+  $('catStats').innerHTML=S.cats.map(c=>{const x=all.filter(i=>i.cat===c.id),v=pc(x);return `<div class="catrow"><span>${esc(c.name)}</span><span>${v}%<span class="mini"><i style="width:${v}%"></i></span></span></div>`}).join('');
+  $('fCat').innerHTML=S.cats.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+}
+$('cats').onclick=e=>{const b=e.target.closest('[data-c]');if(b){cur=b.dataset.c;render()}};
+$('filterBtn').onclick=()=>{filter={all:'todo',todo:'done',done:'all'}[filter];render()};
+$('q').oninput=render;
+$('list').onclick=e=>{const it=e.target.closest('.item');if(!it)return;const i=S.items.find(x=>x.id===it.dataset.id);
+  if(e.target.closest('.more')){openSheet(i);return}
+  i.done=!i.done;i.at=i.done?Date.now():0;save();render();if(i.done&&navigator.vibrate)navigator.vibrate(15)};
+function openSheet(i){editId=i?i.id:null;$('shTitle').textContent=i?'Изменить':'Новое задание';$('fTitle').value=i?i.title:'';$('fNote').value=i?i.note:'';render();$('fCat').value=i?i.cat:cur;$('fDel').classList.toggle('hidden',!i);$('sheet').classList.add('open');$('bg').classList.add('open')}
+function close(){$('sheet').classList.remove('open');$('bg').classList.remove('open');document.activeElement.blur()}
+$('fab').onclick=()=>openSheet(null);$('bg').onclick=close;$('fCancel').onclick=close;
+$('fSave').onclick=()=>{const t=$('fTitle').value.trim();if(!t){$('fTitle').focus();return}
+  if(editId){const i=S.items.find(x=>x.id===editId);Object.assign(i,{title:t,note:$('fNote').value.trim(),cat:$('fCat').value})}
+  else S.items.push({id:uid(),title:t,note:$('fNote').value.trim(),cat:$('fCat').value,done:false,at:0});
+  cur=$('fCat').value;save();close();render();toast('Сохранено')};
+$('fDel').onclick=()=>{S.items=S.items.filter(x=>x.id!==editId);save();close();render();toast('Удалено')};
+$('addCat').onclick=()=>{const n=$('newCat').value.trim();if(!n)return;const id=uid();S.cats.push({id,name:n});$('newCat').value='';save();render();toast('Раздел добавлен')};
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));['track','stats','set'].forEach(v=>$('v-'+v).classList.toggle('hidden',v!==b.dataset.v));$('fab').classList.toggle('hidden',b.dataset.v!=='track');scrollTo(0,0)});
+$('exp').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));a.download='gta6-progress.json';a.click()};
+$('impBtn').onclick=()=>$('imp').click();
+$('imp').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{const d=JSON.parse(t);if(!d.items)throw 0;S=d;save();render();toast('Импортировано')}catch(_){toast('Неверный файл')}})};
+let armed={};function twice(k,fn,msg){if(armed[k]){fn();armed[k]=0}else{armed[k]=1;toast(msg);setTimeout(()=>armed[k]=0,2500)}}
+$('uncheck').onclick=()=>twice('u',()=>{S.items.forEach(i=>{i.done=false;i.at=0});save();render();toast('Отметки сняты')},'Нажмите ещё раз для подтверждения');
+$('reset').onclick=()=>twice('r',()=>{S=seed();save();render();toast('Сброшено')},'Нажмите ещё раз для подтверждения');
+render();
+</script>
+</body>
+</html>
